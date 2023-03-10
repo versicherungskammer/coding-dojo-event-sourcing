@@ -1,0 +1,48 @@
+spring:
+  kafka:
+    replayMode: ${REPLAY_MODE:false}
+
+    topics:
+      roomCommand: dojo-room-command
+      roomEventInternal: dojo-room-event-internal
+      roomEventExternal: dojo-room-event
+      roomEventAndState: dojo-room-event-state
+      roomState: dojo-room-state
+      feedback: dojo-room-feedback
+
+    stores:
+      roomEventAggregate: "aggreate"
+      roomReaderState: "rooms"
+
+    bootstrapServers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+      roomCommandProducer:
+        clientId: "room-command-producer"
+
+    streams:
+      properties:
+        processing.guarantee: exactly_once
+        auto-offset-reset: latest
+        replication-factor: 1
+
+      roomCommandHandler:
+        application.id: "room-command-handler"
+
+      roomEventAggregator:
+        application.id: "room-event-aggregator"
+        stores:
+          aggregate: "aggregate"
+
+      roomReader:
+        application.id: "room-reader"
+        stores:
+          state: "state"
+
+      feedbackReader:
+        application.id: "feedback-reader"
+        stores:
+          state: "state"

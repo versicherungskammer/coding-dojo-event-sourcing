@@ -1,0 +1,7 @@
+micronaut:
+  application:
+    name: mock_human_resources
+netty:
+  default:
+    allocator:
+      max-order: 3

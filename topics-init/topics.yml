@@ -1,0 +1,75 @@
+contract: kafka-topics-legacy
+topics:
+  dojo-room-command:
+    partitions: 1
+    replication: 1
+    configs:
+      cleanup.policy: compact
+      retention.ms: 86400000
+  dojo-room-event-internal:
+    partitions: 1
+    replication: 1
+    configs:
+      cleanup.policy: delete
+      retention.ms: -1
+  dojo-room-event:
+    partitions: 1
+    replication: 1
+    configs:
+      cleanup.policy: delete
+      retention.ms: -1
+  dojo-room-state:
+    partitions: 1
+    replication: 1
+    configs:
+      cleanup.policy: compact
+      retention.ms: -1
+  dojo-room-event-state:
+    partitions: 1
+    replication: 1
+    configs:
+      cleanup.policy: compact
+      retention.ms: -1
+  dojo-room-feedback:
+    partitions: 1
+    replication: 1
+    configs:
+      cleanup.policy: compact
+      retention.ms: 86400000
+  dojo-person-command:
+    partitions: 1
+    replication: 1
+    configs:
+      cleanup.policy: compact
+      retention.ms: 86400000
+  dojo-person-event-internal:
+    partitions: 1
+    replication: 1
+    configs:
+      cleanup.policy: delete
+      retention.ms: -1
+  dojo-person-event:
+    partitions: 1
+    replication: 1
+    configs:
+      cleanup.policy: delete
+      retention.ms: -1
+  dojo-person-state:
+    partitions: 1
+    replication: 1
+    configs:
+      cleanup.policy: compact
+      retention.ms: -1
+  dojo-person-event-state:
+    partitions: 1
+    replication: 1
+    configs:
+      cleanup.policy: compact
+      retention.ms: -1
+  dojo-person-feedback:
+    partitions: 1
+    replication: 1
+    configs:
+      cleanup.policy: compact
+      retention.ms: 86400000
+
