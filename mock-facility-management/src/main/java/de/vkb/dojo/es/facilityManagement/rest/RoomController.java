@@ -43,17 +43,17 @@ public class RoomController {
         return roomStore.getAll();
     }
 
-    @GetMapping(value = "/{aggregateId}", produces = "application/json")
-    public RoomOutput read(@PathVariable String aggregateId) {
-        return roomStore.get(aggregateId).orElse(null);
-    }
-
     @PostMapping(value = "", produces = "application/json")
     public ResponseEntity<Reference> create(@RequestBody RoomCreateData data) {
         return sendCommand( id -> new CreateRoom(
                 id,
                 data.name
         ));
+    }
+
+    @GetMapping(value = "/{aggregateId}", produces = "application/json")
+    public RoomOutput read(@PathVariable String aggregateId) {
+        return roomStore.get(aggregateId).orElse(null);
     }
 
     @PutMapping(value = "/{aggregateId}", produces = "application/json")

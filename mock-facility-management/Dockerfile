@@ -12,7 +12,7 @@ ADD build.gradle /workspace/build.gradle
 ADD src /workspace/src
 
 
-RUN ./gradlew assemble
+RUN ./gradlew --no-daemon assemble
 
 FROM ${DOCKER_REPO:-docker.io}/eclipse-temurin:11-jre-focal
 
