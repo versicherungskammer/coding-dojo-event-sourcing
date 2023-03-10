@@ -1,6 +1,6 @@
 package de.vkb.dojo.es.facilityManagement.model.event;
 
-import de.vkb.dojo.es.facilityManagement.model.feedback.ref.Reference;
+import de.vkb.dojo.es.facilityManagement.model.ref.Reference;
 
 public interface Event {
     String getOperationId();

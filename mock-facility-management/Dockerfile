@@ -1,4 +1,5 @@
-FROM eclipse-temurin:11-jdk-focal AS builder
+ARG DOCKER_REPO
+FROM ${DOCKER_REPO:-docker.io}/eclipse-temurin:11-jdk-focal AS builder
 
 RUN mkdir -p /workspace
 
@@ -13,7 +14,7 @@ ADD src /workspace/src
 
 RUN ./gradlew assemble
 
-FROM eclipse-temurin:11-jre-focal
+FROM ${DOCKER_REPO:-docker.io}/eclipse-temurin:11-jre-focal
 
 COPY --from=builder /workspace/build/libs/application.jar /application.jar
 

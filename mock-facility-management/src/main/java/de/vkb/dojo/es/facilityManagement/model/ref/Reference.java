@@ -1,4 +1,4 @@
-package de.vkb.dojo.es.facilityManagement.model.feedback.ref;
+package de.vkb.dojo.es.facilityManagement.model.ref;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;

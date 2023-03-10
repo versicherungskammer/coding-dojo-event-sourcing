@@ -1,7 +1,7 @@
 package de.vkb.dojo.es.facilityManagement.model.feedback;
 
 import com.fasterxml.jackson.annotation.*;
-import de.vkb.dojo.es.facilityManagement.model.feedback.ref.Reference;
+import de.vkb.dojo.es.facilityManagement.model.ref.Reference;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeName("success")

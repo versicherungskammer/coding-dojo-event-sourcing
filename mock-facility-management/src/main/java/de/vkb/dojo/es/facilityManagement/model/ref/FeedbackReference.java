@@ -1,14 +1,14 @@
-package de.vkb.dojo.es.facilityManagement.model.feedback.ref;
+package de.vkb.dojo.es.facilityManagement.model.ref;
 
 import com.fasterxml.jackson.annotation.*;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonTypeName("room")
-public class RoomReference implements Reference {
+@JsonTypeName("feedback")
+public class FeedbackReference implements Reference {
     private final String id;
 
     @JsonCreator
-    public RoomReference(
+    public FeedbackReference(
             @JsonProperty("id") String id
     ) {
         this.id = id;
@@ -21,6 +21,6 @@ public class RoomReference implements Reference {
 
     @Override
     public String getPath() {
-        return "/rooms/" + id;
+        return "/feedback/" + id;
     }
 }

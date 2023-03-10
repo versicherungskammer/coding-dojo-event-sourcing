@@ -22,10 +22,10 @@ import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.kstream.Produced;
+import org.apache.kafka.streams.kstream.Repartitioned;
 import org.apache.kafka.streams.state.Stores;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
-import org.springframework.kafka.config.StreamsBuilderFactoryBean;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -90,9 +90,14 @@ public class StreamTopologiesFactory {
                         Consumed.with(Serdes.String(), jsonSerdeFactory.of(RoomEvent.class))
                 )
                 .map( (k, v) -> new KeyValue<>(v.getAggregateId(), v) )
-                .repartition()
+                .repartition(
+                        Repartitioned.with(
+                                Serdes.String(), jsonSerdeFactory.of(RoomEvent.class)
+                        )
+                )
                 .transformValues(
-                        new EventAggregatorTransformerSupplier<>(storeNames.roomEventAggregate, delegatingAggregator)
+                        new EventAggregatorTransformerSupplier<>(storeNames.roomEventAggregate, delegatingAggregator),
+                        storeNames.roomEventAggregate
                 );
 
         var successful = resultStream
@@ -140,13 +145,7 @@ public class StreamTopologiesFactory {
                         Serdes.String(),
                         jsonSerdeFactory.of(Room.class)
                 ),
-                Materialized.as(
-                        Stores.persistentKeyValueStore()
-                        Stores.keyValueStoreBuilder(
-                                Stores.persistentKeyValueStore(storeNames.roomEventAggregate),
-                                Serdes.String(), jsonSerdeFactory.of(RoomAggregate.class)
-                        )
-                        storeNames.roomReaderState)
+                Materialized.as(storeNames.roomReaderState)
         );
 
         return builder.build();

@@ -8,9 +8,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 @SpringBootApplication
 @EnableConfigurationProperties(TopicNames.class)
 public class FacilityManagementApplication {
-
 	public static void main(String[] args) {
 		SpringApplication.run(FacilityManagementApplication.class, args);
 	}
-
 }

@@ -1,12 +1,11 @@
 package de.vkb.dojo.es.facilityManagement.rest;
 
+import de.vkb.dojo.es.facilityManagement.kafka.view.FeedbackStore;
 import de.vkb.dojo.es.facilityManagement.model.feedback.Feedback;
 import de.vkb.dojo.es.facilityManagement.model.feedback.SuccessFeedback;
 import de.vkb.dojo.es.facilityManagement.model.feedback.UnknownFeedback;
-import de.vkb.dojo.es.facilityManagement.model.feedback.ref.FeedbackReference;
+import de.vkb.dojo.es.facilityManagement.model.ref.FeedbackReference;
 import de.vkb.dojo.es.facilityManagement.services.ReferenceService;
-import de.vkb.dojo.es.facilityManagement.services.store.FeedbackStore;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,12 +14,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("rooms")
+@RequestMapping("/feedback")
 public class FeedbackController {
-    @Autowired
-    ReferenceService referenceService;
-    @Autowired
-    FeedbackStore feedbackStore;
+    final ReferenceService referenceService;
+    final FeedbackStore feedbackStore;
+
+    public FeedbackController(ReferenceService referenceService, FeedbackStore feedbackStore) {
+        this.referenceService = referenceService;
+        this.feedbackStore = feedbackStore;
+    }
 
     @GetMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<Feedback> read(@PathVariable String id) {

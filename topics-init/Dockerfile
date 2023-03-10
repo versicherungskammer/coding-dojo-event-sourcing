@@ -1,4 +1,5 @@
-FROM eclipse-temurin:11-jre-focal
+ARG DOCKER_REPO
+FROM ${DOCKER_REPO:-docker.io}/eclipse-temurin:11-jre-focal
 
 COPY kafka-topics-init.jar /kafka-topics-init.jar
 COPY topics.yml /topics.yml

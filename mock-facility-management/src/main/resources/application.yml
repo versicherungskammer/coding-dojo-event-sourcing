@@ -46,3 +46,7 @@ spring:
         application.id: "feedback-reader"
         stores:
           state: "state"
+
+logging:
+  level:
+    org.apache.kafka: WARN

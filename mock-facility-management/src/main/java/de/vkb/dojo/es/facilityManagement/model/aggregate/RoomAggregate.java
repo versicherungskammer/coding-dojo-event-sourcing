@@ -2,10 +2,12 @@ package de.vkb.dojo.es.facilityManagement.model.aggregate;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import de.vkb.dojo.es.facilityManagement.model.state.Room;
 import de.vkb.dojo.es.facilityManagement.model.state.builder.RoomBuilder;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RoomAggregate {
     private final String id;
     private final Room room;

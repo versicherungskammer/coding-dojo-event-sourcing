@@ -1,7 +1,6 @@
 package de.vkb.dojo.es.facilityManagement.kafka.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.context.annotation.Configuration;
 
 @ConfigurationProperties("spring.kafka.topics")

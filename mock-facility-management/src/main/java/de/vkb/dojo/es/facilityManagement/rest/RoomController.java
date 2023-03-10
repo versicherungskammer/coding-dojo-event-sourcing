@@ -4,14 +4,13 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import de.vkb.dojo.es.facilityManagement.kafka.RoomCommandProducer;
+import de.vkb.dojo.es.facilityManagement.kafka.view.RoomStore;
 import de.vkb.dojo.es.facilityManagement.model.Change;
 import de.vkb.dojo.es.facilityManagement.model.command.*;
-import de.vkb.dojo.es.facilityManagement.model.feedback.ref.FeedbackReference;
-import de.vkb.dojo.es.facilityManagement.model.feedback.ref.Reference;
-import de.vkb.dojo.es.facilityManagement.model.state.Room;
+import de.vkb.dojo.es.facilityManagement.model.dto.RoomOutput;
+import de.vkb.dojo.es.facilityManagement.model.ref.FeedbackReference;
+import de.vkb.dojo.es.facilityManagement.model.ref.Reference;
 import de.vkb.dojo.es.facilityManagement.services.ReferenceService;
-import de.vkb.dojo.es.facilityManagement.services.store.RoomStore;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,15 +19,18 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("rooms")
+@RequestMapping("/rooms")
 public class RoomController {
-    @Autowired
-    ReferenceService referenceService;
-    @Autowired
-    RoomStore roomStore;
-    @Autowired
-    RoomCommandProducer roomCommandProducer;
-    
+    final ReferenceService referenceService;
+    final RoomStore roomStore;
+    final RoomCommandProducer roomCommandProducer;
+
+    public RoomController(ReferenceService referenceService, RoomStore roomStore, RoomCommandProducer roomCommandProducer) {
+        this.referenceService = referenceService;
+        this.roomStore = roomStore;
+        this.roomCommandProducer = roomCommandProducer;
+    }
+
     private ResponseEntity<Reference> sendCommand(CommandOp lambda) {
         var feedback = new FeedbackReference(UUID.randomUUID().toString());
         var command = lambda.op(feedback.getId());
@@ -36,17 +38,17 @@ public class RoomController {
         return referenceService.sendResponse(HttpStatus.ACCEPTED, feedback);
     }
 
-    @GetMapping(value = "/", produces = "application/json")
-    public List<Room> list() {
+    @GetMapping(value = "", produces = "application/json")
+    public List<RoomOutput> list() {
         return roomStore.getAll();
     }
 
     @GetMapping(value = "/{aggregateId}", produces = "application/json")
-    public Room read(@PathVariable String aggregateId) {
-        return roomStore.get(aggregateId);
+    public RoomOutput read(@PathVariable String aggregateId) {
+        return roomStore.get(aggregateId).orElse(null);
     }
 
-    @PostMapping(value = "/", produces = "application/json")
+    @PostMapping(value = "", produces = "application/json")
     public ResponseEntity<Reference> create(@RequestBody RoomCreateData data) {
         return sendCommand( id -> new CreateRoom(
                 id,

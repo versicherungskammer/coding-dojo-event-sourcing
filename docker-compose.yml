@@ -1,8 +1,8 @@
-version: "3.8"
+version: "3.3"
 
 services:
   zookeeper:
-    image: "docker.io/bitnami/zookeeper:3"
+    image: "${REPO:-docker.io}/bitnami/zookeeper:3"
     ports:
       - "2181:2181"
     volumes:
@@ -10,7 +10,7 @@ services:
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
   kafka:
-    image: "docker.io/bitnami/kafka:2-debian-10"
+    image: "${REPO:-docker.io}/bitnami/kafka:2-debian-10"
     ports:
       - "9092:9092"
       - "9093:9093"
@@ -26,19 +26,27 @@ services:
     depends_on:
       - zookeeper
   topics-init:
-    build: ./topics-init
+    build:
+      context: ./topics-init
+      args:
+        DOCKER_REPO: ${REPO:-docker.io}
     depends_on:
       - kafka
     restart: on-failure
     environment:
       - KAFKA_BOOTSTRAP_SERVERS=kafka:9093
-#  facility-management:
-#    build: ./mock-facility-management
-#    depends_on:
-#      - topics-init
-#    restart: on-failure
-#    environment:
-#      - KAFKA_BOOTSTRAP_SERVERS=kafka:9093
+  facility-management:
+    build:
+      context: ./mock-facility-management
+      args:
+        DOCKER_REPO: ${REPO:-docker.io}
+    ports:
+      - "8081:8080"
+    depends_on:
+      - topics-init
+    restart: on-failure
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9093
 
 volumes:
   zookeeper_data:

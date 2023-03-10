@@ -1,12 +1,10 @@
-package de.vkb.dojo.es.facilityManagement.services.store;
+package de.vkb.dojo.es.facilityManagement.kafka.view;
 
 import de.vkb.dojo.es.facilityManagement.kafka.config.StoreNames;
 import de.vkb.dojo.es.facilityManagement.model.feedback.Feedback;
 import org.apache.kafka.streams.StoreQueryParameters;
-import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.state.QueryableStoreTypes;
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.config.StreamsBuilderFactoryBean;
 import org.springframework.stereotype.Component;

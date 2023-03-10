@@ -1,6 +1,6 @@
 package de.vkb.dojo.es.facilityManagement.services;
 
-import de.vkb.dojo.es.facilityManagement.model.feedback.ref.Reference;
+import de.vkb.dojo.es.facilityManagement.model.ref.Reference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;

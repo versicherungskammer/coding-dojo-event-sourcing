@@ -2,8 +2,8 @@ package de.vkb.dojo.es.facilityManagement.model.event;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import de.vkb.dojo.es.facilityManagement.model.feedback.ref.Reference;
-import de.vkb.dojo.es.facilityManagement.model.feedback.ref.RoomReference;
+import de.vkb.dojo.es.facilityManagement.model.ref.Reference;
+import de.vkb.dojo.es.facilityManagement.model.ref.RoomReference;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "_type")
 @JsonSubTypes({
