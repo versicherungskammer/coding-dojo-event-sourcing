@@ -9,6 +9,8 @@
         </encoder>
     </appender>
 
+    <logger name="org.apache.kafka" level="warn" />
+
     <root level="info">
         <appender-ref ref="STDOUT" />
     </root>

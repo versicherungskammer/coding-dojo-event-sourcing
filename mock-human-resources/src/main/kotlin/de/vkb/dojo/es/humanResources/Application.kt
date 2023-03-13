@@ -1,4 +1,4 @@
-package de.vkb.dojo.es
+package de.vkb.dojo.es.humanResources
 
 import io.micronaut.runtime.Micronaut.run
 fun main(args: Array<String>) {

@@ -5,3 +5,42 @@ netty:
   default:
     allocator:
       max-order: 3
+
+kafka:
+  bootstrap.servers: localhost:9092
+
+  topics:
+    personCommand: dojo-person-command
+    personEventInternal: dojo-person-event-internal
+    personEventExternal: dojo-person-event
+    personEventAndState: dojo-person-event-state
+    personState: dojo-person-state
+    feedback: dojo-person-feedback
+
+  producers:
+    person-command:
+      id: person-command-producer
+      value:
+        serializer: io.micronaut.configuration.kafka.serde.JsonSerde
+
+  streams:
+    default:
+      application.id: person-event-aggregator
+      processing.guarantee: exactly_once
+      stores:
+        aggregate: "person-aggregate"
+    person-command-handler:
+      application.id: person-command-handler
+      processing.guarantee: exactly_once
+    person-reader:
+      application.id: person-reader
+      processing.guarantee: exactly_once
+      stores:
+        state: "person-state"
+    feedback-reader:
+      application.id: feedback-reader
+      processing.guarantee: exactly_once
+      stores:
+        state: "feedback-state"
+
+  replayMode: ${REPLAY_MODE:false}

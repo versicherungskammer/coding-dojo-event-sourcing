@@ -8,7 +8,7 @@ plugins {
 }
 
 version = "0.1"
-group = "de.vkb.dojo.es"
+group = "de.vkb.dojo.es.humanResources"
 
 repositories {
     mavenCentral()
@@ -33,7 +33,7 @@ dependencies {
 
 
 application {
-    mainClass.set("de.vkb.dojo.es.ApplicationKt")
+    mainClass.set("de.vkb.dojo.es.humanResources.ApplicationKt")
 }
 java {
     sourceCompatibility = JavaVersion.toVersion("11")
@@ -57,7 +57,7 @@ micronaut {
     testRuntime("junit5")
     processing {
         incremental(true)
-        annotations("de.vkb.dojo.es.*")
+        annotations("de.vkb.dojo.es.humanResources.*")
     }
     testResources {
         sharedServer = true

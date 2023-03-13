@@ -1,0 +1,15 @@
+package de.vkb.dojo.es.humanResources.model.event
+
+import com.fasterxml.jackson.annotation.JsonSubTypes
+import com.fasterxml.jackson.annotation.JsonTypeInfo
+import de.vkb.dojo.es.humanResources.model.ref.PersonReference
+
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "_type")
+@JsonSubTypes(
+    JsonSubTypes.Type(value = PersonCreated::class, name = "person-created"),
+    JsonSubTypes.Type(value = PersonUpdated::class, name = "person-updated"),
+    JsonSubTypes.Type(value = PersonDeleted::class, name = "person-deleted")
+)
+interface PersonEvent: Event {
+    override val reference get() = PersonReference(aggregateId)
+}

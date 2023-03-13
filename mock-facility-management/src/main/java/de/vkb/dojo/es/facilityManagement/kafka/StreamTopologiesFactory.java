@@ -51,7 +51,7 @@ public class StreamTopologiesFactory {
                 .filter( (k, v) -> v.getFeedback().getSuccess() );
 
         successful
-                .mapValues(CommandHandlerResult::getEvent)
+                .map( (k, v) -> new KeyValue<>(v.getEvent().getAggregateId(), v.getEvent()) )
                 .to(
                         topicNames.getRoomEventInternal(),
                         Produced.with(Serdes.String(), jsonSerdeFactory.of(RoomEvent.class))
