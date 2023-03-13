@@ -5,12 +5,7 @@ RUN mkdir -p /workspace
 
 WORKDIR /workspace
 
-ADD gradlew /workspace/gradlew
-ADD gradle /workspace/gradle
-ADD settings.gradle /workspace/settings.gradle
-ADD build.gradle /workspace/build.gradle
-ADD src /workspace/src
-
+COPY . /workspace
 
 RUN ./gradlew --no-daemon assemble
 

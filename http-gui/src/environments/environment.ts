@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   roomBaseUrl: 'http://localhost:8081',
-  personBaseUrl: 'http://localhost:8080'
+  personBaseUrl: 'http://localhost:8082'
 };
 
 /*
