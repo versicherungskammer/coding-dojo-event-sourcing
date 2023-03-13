@@ -1,0 +1,72 @@
+micronaut:
+  application:
+    name: mock_human_resources
+  server:
+    cors:
+      enabled: true
+      configurations:
+        'all':
+          exposedHeaders: '*'
+
+netty:
+  default:
+    allocator:
+      max-order: 3
+
+kafka:
+  bootstrap.servers: localhost:9092
+
+  topics:
+    roomEvent: dojo-room-event
+    roomEventAndState: dojo-room-event-state
+    roomState: dojo-room-state
+    personEvent: dojo-person-event
+    personEventAndState: dojo-person-event-state
+    personState: dojo-person-state
+    reservationCommand: dojo-reservation-command
+    reservationEventInternal: dojo-reservation-event-internal
+    reservationEventExternal: dojo-reservation-event
+    reservationEventAndState: dojo-reservation-event-state
+    reservationState: dojo-reservation-state
+    feedback: dojo-reservation-feedback
+
+  producers:
+    reservation-command:
+      id: reservation-command-producer
+      value:
+        serializer: io.micronaut.configuration.kafka.serde.JsonSerde
+
+  streams:
+    default:
+      application.id: reservation-event-aggregator
+      processing.guarantee: exactly_once
+      stores:
+        aggregate: "reservation-aggregate"
+    reservation-command-handler:
+      application.id: reservation-command-handler
+      processing.guarantee: exactly_once
+      stores:
+        rooms: "reservation-rooms"
+        persons: "reservation-persons"
+    reservation-room-saga:
+      application.id: reservation-room-saga
+      processing.guarantee: exactly_once
+      stores:
+        rooms: "reservation-rooms"
+    reservation-person-saga:
+      application.id: reservation-person-saga
+      processing.guarantee: exactly_once
+      stores:
+        persons: "reservation-persons"
+    reservation-reader:
+      application.id: reservation-reader
+      processing.guarantee: exactly_once
+      stores:
+        state: "reservation-state"
+    reservation-feedback-reader:
+      application.id: reservation-feedback-reader
+      processing.guarantee: exactly_once
+      stores:
+        state: "reservation-feedback"
+
+  replayMode: ${REPLAY_MODE:false}

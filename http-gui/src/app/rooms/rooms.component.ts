@@ -65,7 +65,7 @@ export class RoomsComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.service.delete(room, result).subscribe( _ => this.reload() );
+        this.service.delete(room).subscribe( _ => this.reload() );
       }
     });
   }

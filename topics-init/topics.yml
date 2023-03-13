@@ -84,4 +84,46 @@ topics:
       cleanup.policy: compact
       retention.ms: 86400000
       min.insync.replicas: 1
+  dojo-reservation-command:
+    partitions: 1
+    replication: 1
+    configs:
+      cleanup.policy: compact
+      retention.ms: 86400000
+      min.insync.replicas: 1
+  dojo-reservation-event-internal:
+    partitions: 1
+    replication: 1
+    configs:
+      cleanup.policy: delete
+      retention.ms: -1
+      min.insync.replicas: 1
+  dojo-reservation-event:
+    partitions: 1
+    replication: 1
+    configs:
+      cleanup.policy: delete
+      retention.ms: -1
+      min.insync.replicas: 1
+  dojo-reservation-state:
+    partitions: 1
+    replication: 1
+    configs:
+      cleanup.policy: compact
+      retention.ms: -1
+      min.insync.replicas: 1
+  dojo-reservation-event-state:
+    partitions: 1
+    replication: 1
+    configs:
+      cleanup.policy: compact
+      retention.ms: -1
+      min.insync.replicas: 1
+  dojo-reservation-feedback:
+    partitions: 1
+    replication: 1
+    configs:
+      cleanup.policy: compact
+      retention.ms: 86400000
+      min.insync.replicas: 1
 

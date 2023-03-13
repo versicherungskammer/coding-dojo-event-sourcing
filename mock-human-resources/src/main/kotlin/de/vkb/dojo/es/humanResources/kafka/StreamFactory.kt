@@ -158,36 +158,11 @@ class StreamFactory(
             topicNames.personEventExternal, // we need to return a KStream, otherwise Micronaut does not start this topology.
             Consumed.with(Serdes.String(), JsonObjectSerde(objectSerializer, PersonEvent::class.java)),
         )
-
-//        builder.addStateStore(
-//            Stores.keyValueStoreBuilder(
-//                Stores.persistentKeyValueStore(storeNames.personReaderState),
-//                Serdes.StringSerde(), JsonObjectSerde(objectSerializer, Person::class.java)
-//            )
-//        )
-//        val input = builder.stream(
-//            topicNames.personState,
-//            Consumed.with(Serdes.String(), JsonObjectSerde(objectSerializer, Person::class.java))
-//        )
-//        input.process(StateStoreProcessorSupplier<String,Person>(storeNames.personReaderState), storeNames.personReaderState)
-//        input.process(StateStoreProcessorSupplier<Person>(storeNames.personReaderState, JsonObjectSerde(objectSerializer, Person::class.java)))
-//        input.toTable(
-//            Materialized.`as`<String?, Person?, KeyValueStore<Bytes, ByteArray>?>(storeNames.personReaderState)
-//                .withKeySerde(Serdes.String())
-//                .withValueSerde(JsonObjectSerde(objectSerializer, Person::class.java))
-//        )
-//        input
-//            .toTable(
-//                Materialized.`as`<String?, Person?, KeyValueStore<Bytes, ByteArray>?>(storeNames.personReaderState)
-//                    .withKeySerde(Serdes.String())
-//                    .withValueSerde(JsonObjectSerde(objectSerializer, Person::class.java))
-//            )
-//        return input
     }
 
     @Singleton
     fun feedbackReaderTopology(
-        @Named("feedback-reader") builder: ConfiguredStreamBuilder
+        @Named("person-feedback-reader") builder: ConfiguredStreamBuilder
     ): KStream<String, *> {
         builder.globalTable(
             topicNames.feedback,
@@ -199,24 +174,5 @@ class StreamFactory(
             topicNames.personEventExternal, // we need to return a KStream, otherwise Micronaut does not start this topology.
             Consumed.with(Serdes.String(), JsonObjectSerde(objectSerializer, PersonEvent::class.java)),
         )
-//        builder.addStateStore(
-//            Stores.keyValueStoreBuilder(
-//                Stores.persistentKeyValueStore(storeNames.feedbackReaderState),
-//                Serdes.StringSerde(), JsonObjectSerde(objectSerializer, Feedback::class.java)
-//            )
-//        )
-//        val input = builder.stream(
-//            topicNames.feedback,
-//            Consumed.with(Serdes.String(), JsonObjectSerde(objectSerializer, Feedback::class.java))
-//        )
-//        val schadenByVertragStore = Stores.persistentKeyValueStore(storeNames.feedbackReaderState)
-//        input
-//            .toTable(
-//                    Materialized.`as`<String?, Feedback?, KeyValueStore<Bytes, ByteArray>?>(storeNames.feedbackReaderState)
-//                        .withKeySerde(Serdes.String())
-//                        .withValueSerde(JsonObjectSerde(objectSerializer, Feedback::class.java))
-//            )
-//        input.process(StateStoreProcessorSupplier<Feedback>(storeNames.feedbackReaderState, JsonObjectSerde(objectSerializer, Feedback::class.java)))
-//        return input
     }
 }

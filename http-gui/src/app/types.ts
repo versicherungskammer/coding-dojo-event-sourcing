@@ -15,6 +15,25 @@ export interface Person extends PersonData {
   id: string;
 }
 
+export interface ReservationPersonData {
+  id: string;
+  username: string;
+  fullname: string;
+}
+export interface ReservationRoomData {
+  id: string;
+  name: string;
+}
+export interface Reservation {
+  id: string;
+  room: ReservationRoomData;
+  person: ReservationPersonData;
+}
+export interface ReservationCreateData {
+  room: string;
+  person: string;
+}
+
 export interface Feedback {
   type: string;
 }

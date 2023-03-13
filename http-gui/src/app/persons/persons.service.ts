@@ -119,10 +119,10 @@ export class PersonsService {
     );
   }
 
-   delete(oldData: Person, newData: PersonData): Observable<Array<Person>> {
+   delete(person: Person): Observable<Array<Person>> {
     return this.backendService.feedback(
       this.http.delete<HttpResponse<Feedback>>(
-        environment.personBaseUrl + '/persons/' + oldData.id,
+        environment.personBaseUrl + '/persons/' + person.id,
         {
           observe: 'response'
         }

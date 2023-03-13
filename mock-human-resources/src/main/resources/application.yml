@@ -44,10 +44,10 @@ kafka:
       processing.guarantee: exactly_once
       stores:
         state: "person-state"
-    feedback-reader:
+    person-feedback-reader:
       application.id: person-feedback-reader
       processing.guarantee: exactly_once
       stores:
-        state: "feedback-state"
+        state: "person-feedback"
 
   replayMode: ${REPLAY_MODE:false}

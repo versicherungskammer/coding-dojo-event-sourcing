@@ -6,7 +6,6 @@ import io.micronaut.configuration.kafka.annotation.KafkaKey
 import io.micronaut.configuration.kafka.annotation.Topic
 
 @KafkaClient(
-//    id = "SYS-KAF-TIER-T-PAZ01",
     id = "\${kafka.producers.person-command.id}",
     acks = KafkaClient.Acknowledge.ALL
 )

@@ -1,0 +1,22 @@
+<button mat-raised-button (click)="reload()">neu laden</button>
+<button mat-raised-button (click)="create()">erstellen</button>
+<table>
+  <thead>
+  <tr>
+    <th>Raum</th>
+    <th>Person</th>
+    <th>ID</th>
+    <th></th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let row of list">
+    <td>{{row.room.name}}</td>
+    <td>{{row.person.fullname}}</td>
+    <td>{{row.id}}</td>
+    <td>
+      <button mat-raised-button (click)="delete(row)">löschen</button>
+    </td>
+  </tr>
+  </tbody>
+</table>

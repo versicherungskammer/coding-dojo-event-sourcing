@@ -65,7 +65,7 @@ export class PersonsComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.service.delete(person, result).subscribe( _ => this.reload() );
+        this.service.delete(person).subscribe( _ => this.reload() );
       }
     });
   }

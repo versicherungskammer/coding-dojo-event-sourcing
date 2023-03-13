@@ -115,10 +115,10 @@ export class RoomsService {
     );
    }
 
-   delete(oldData: Room, newData: RoomData): Observable<Array<Room>> {
+   delete(room: Room): Observable<Array<Room>> {
     return this.backendService.feedback(
       this.http.delete<HttpResponse<Feedback>>(
-        environment.roomBaseUrl + '/rooms/' + oldData.id,
+        environment.roomBaseUrl + '/rooms/' + room.id,
         {
           observe: 'response'
         }
