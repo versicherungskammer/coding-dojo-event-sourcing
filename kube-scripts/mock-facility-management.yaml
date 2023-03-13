@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mock-facility-management
+  labels:
+    app.kubernetes.io/name: mock-facility-management
+    app: mock-facility-management
+spec:
+  selector:
+    matchLabels:
+      app: mock-facility-management
+  template:
+    metadata:
+      labels:
+        app: mock-facility-management
+    spec:
+      containers:
+        - name: mock-facility-management
+          image: ghcr.io/versicherungskammer/coding-dojo-event-sourcing/mock-facility-management:main
+          imagePullPolicy: Always
+          env:
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: ${KAFKA_BOOTSTRAP_SERVERS}
+          ports:
+            - containerPort: 8080
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: mock-facility-management
+  labels:
+    app.kubernetes.io/name: mock-facility-management
+    app: mock-facility-management
+spec:
+    ports:
+        - name: rest
+          port: 8080
+          protocol: TCP
+          targetPort: 8080
+    selector:
+        app: mock-facility-management
+    sessionAffinity: None
+    type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mock-facility-management
+  labels:
+    app.kubernetes.io/name: mock-facility-management
+    app: mock-facility-management
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: facility.${K8S_SERVER}
+      http:
+        paths:
+          - backend:
+              service:
+                name: mock-facility-management
+                port:
+                  number: 8080
+            pathType: "Prefix"
+            path: "/"
