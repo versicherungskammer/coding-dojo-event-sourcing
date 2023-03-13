@@ -81,7 +81,7 @@ public class RoomController {
         ));
     }
 
-    @DeleteMapping(value = "/{aggregateId}/unlock", produces = "application/json")
+    @DeleteMapping(value = "/{aggregateId}/lock", produces = "application/json")
     public ResponseEntity<Reference> unlock(@PathVariable String aggregateId) {
         return sendCommand( operationId -> new UnlockRoom(
                 operationId,

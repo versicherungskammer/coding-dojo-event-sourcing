@@ -10,10 +10,6 @@ spring:
       roomState: dojo-room-state
       feedback: dojo-room-feedback
 
-    stores:
-      roomEventAggregate: "aggreate"
-      roomReaderState: "rooms"
-
     bootstrapServers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
 
     producer:

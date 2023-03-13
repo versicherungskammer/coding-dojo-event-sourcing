@@ -32,7 +32,7 @@ public class FeedbackController {
                     .header("Location", new FeedbackReference(id).getPath())
                     .body(new UnknownFeedback());
         } else if (feedback instanceof SuccessFeedback) {
-            return ResponseEntity.status(HttpStatus.TOO_EARLY)
+            return ResponseEntity.status(HttpStatus.CREATED)
                     .header("Location", ((SuccessFeedback) feedback).getReference().getPath())
                     .body(feedback);
         } else {
