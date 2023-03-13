@@ -1,0 +1,20 @@
+name: Docker
+
+on: [push]
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: publish
+        uses: versicherungskammer/multi-platform-docker-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          image-name: topics-init
+          auto-tags: branch-name latest-if-main commit-hash
+          path: topics-init
+          docker-file: topics-init/Dockerfile
