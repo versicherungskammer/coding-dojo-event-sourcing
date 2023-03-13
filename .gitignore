@@ -8,6 +8,10 @@
 *.iml
 .project
 .classpath
+*.ipr
+*.iws
+.settings
+.factorypath
 .c9/
 *.launch
 .settings/
@@ -19,3 +23,6 @@
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+Thumbs.db
+.DS_Store
