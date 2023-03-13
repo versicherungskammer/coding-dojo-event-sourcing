@@ -6,6 +6,7 @@ topics:
     configs:
       cleanup.policy: compact
       retention.ms: 86400000
+      min.insync.replicas: 1
   dojo-room-event-internal:
     partitions: 1
     replication: 1
