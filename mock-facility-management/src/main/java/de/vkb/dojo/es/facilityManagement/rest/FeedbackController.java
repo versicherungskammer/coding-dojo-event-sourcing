@@ -32,7 +32,7 @@ public class FeedbackController {
                     .header("Location", new FeedbackReference(id).getPath())
                     .body(new UnknownFeedback());
         } else if (feedback instanceof SuccessFeedback) {
-            return ResponseEntity.status(HttpStatus.CREATED)
+            return ResponseEntity.status(HttpStatus.SEE_OTHER)
                     .header("Location", ((SuccessFeedback) feedback).getReference().getPath())
                     .body(feedback);
         } else {
