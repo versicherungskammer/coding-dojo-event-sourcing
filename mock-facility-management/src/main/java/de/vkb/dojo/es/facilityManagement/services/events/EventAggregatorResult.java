@@ -22,6 +22,12 @@ public class EventAggregatorResult<E extends Event, A> {
         this.feedback = feedback;
     }
 
+    public EventAggregatorResult(E event) {
+        this.event = event;
+        this.aggregate = null;
+        this.feedback = new SuccessFeedback(event.getReference());
+    }
+
     public E getEvent() {
         return event;
     }

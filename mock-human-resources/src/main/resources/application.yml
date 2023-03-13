@@ -1,6 +1,13 @@
 micronaut:
   application:
     name: mock_human_resources
+  server:
+    cors:
+      enabled: true
+      configurations:
+        'all':
+          exposedHeaders: '*'
+
 netty:
   default:
     allocator:
@@ -38,7 +45,7 @@ kafka:
       stores:
         state: "person-state"
     feedback-reader:
-      application.id: feedback-reader
+      application.id: person-feedback-reader
       processing.guarantee: exactly_once
       stores:
         state: "feedback-state"

@@ -8,11 +8,12 @@ import de.vkb.dojo.es.humanResources.model.state.Person
 data class PersonOutput(
     val id: String,
     val username: String,
-    val fullname: String
+    val fullname: String,
+    val sick: Boolean
 ) {
     val links = mapOf(
         "self" to PersonReference(id).path
     )
 }
 
-fun PersonOutput(id: String, person: Person): PersonOutput = PersonOutput(id, person.username, person.fullname)
+fun PersonOutput(id: String, person: Person): PersonOutput = PersonOutput(id, person.username, person.fullname, person.sick)

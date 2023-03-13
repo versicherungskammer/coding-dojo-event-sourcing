@@ -39,7 +39,7 @@ spring:
           state: "state"
 
       feedbackReader:
-        application.id: "feedback-reader"
+        application.id: "room-feedback-reader"
         stores:
           state: "state"
 

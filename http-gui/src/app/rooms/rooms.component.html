@@ -1,0 +1,25 @@
+<button mat-raised-button (click)="reload()">neu laden</button>
+<button mat-raised-button (click)="create()">erstellen</button>
+<table>
+  <thead>
+  <tr>
+    <th>Name</th>
+    <th>ID</th>
+    <th>Status</th>
+    <th></th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let row of list" [ngClass]="{maintenance: row.maintenance}">
+    <td>{{row.name}}</td>
+    <td>{{row.id}}</td>
+    <td>{{row.maintenance ? "wegen Wartung gesperrt" : ""}}</td>
+    <td>
+      <button mat-raised-button (click)="edit(row)">ändern</button>
+      <button mat-raised-button (click)="lock(row)" *ngIf="!row.maintenance">für Wartung sperren</button>
+      <button mat-raised-button (click)="unlock(row)" *ngIf="row.maintenance">Wartung beenden</button>
+      <button mat-raised-button (click)="delete(row)">löschen</button>
+    </td>
+  </tr>
+  </tbody>
+</table>

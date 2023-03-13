@@ -8,6 +8,8 @@ import de.vkb.dojo.es.humanResources.model.ref.PersonReference
 @JsonSubTypes(
     JsonSubTypes.Type(value = PersonCreated::class, name = "person-created"),
     JsonSubTypes.Type(value = PersonUpdated::class, name = "person-updated"),
+    JsonSubTypes.Type(value = PersonSick::class, name = "person-sick"),
+    JsonSubTypes.Type(value = PersonHealthy::class, name = "person-healthy"),
     JsonSubTypes.Type(value = PersonDeleted::class, name = "person-deleted")
 )
 interface PersonEvent: Event {

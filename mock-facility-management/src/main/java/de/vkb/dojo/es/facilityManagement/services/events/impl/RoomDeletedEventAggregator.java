@@ -4,6 +4,7 @@ import de.vkb.dojo.es.facilityManagement.model.aggregate.RoomAggregate;
 import de.vkb.dojo.es.facilityManagement.model.event.RoomDeleted;
 import de.vkb.dojo.es.facilityManagement.model.event.RoomEvent;
 import de.vkb.dojo.es.facilityManagement.model.feedback.FailFeedback;
+import de.vkb.dojo.es.facilityManagement.model.feedback.SuccessFeedback;
 import de.vkb.dojo.es.facilityManagement.services.events.EventAggregatorResult;
 import de.vkb.dojo.es.facilityManagement.services.events.delegating.PickyEventAggregator;
 import org.springframework.stereotype.Component;
@@ -20,8 +21,7 @@ public class RoomDeletedEventAggregator extends PickyEventAggregator<RoomEvent, 
             return new EventAggregatorResult<>(event, new FailFeedback("no room with this aggregateId found"));
         }
         return new EventAggregatorResult<>(
-                event,
-                null
+                event
         );
     }
 }

@@ -1,27 +1,31 @@
 package de.vkb.dojo.es.humanResources.services.events.impl
 
 import de.vkb.dojo.es.humanResources.model.aggregate.PersonAggregate
-import de.vkb.dojo.es.humanResources.model.event.PersonDeleted
 import de.vkb.dojo.es.humanResources.model.event.PersonEvent
+import de.vkb.dojo.es.humanResources.model.event.PersonHealthy
+import de.vkb.dojo.es.humanResources.model.event.PersonUpdated
 import de.vkb.dojo.es.humanResources.model.feedback.FailFeedback
-import de.vkb.dojo.es.humanResources.model.feedback.SuccessFeedback
+import de.vkb.dojo.es.humanResources.services.ValidatorService
 import de.vkb.dojo.es.humanResources.services.events.EventAggregatorResult
 import de.vkb.dojo.es.humanResources.services.events.delegating.PickyEventAggregator
 import jakarta.inject.Singleton
 
 @Singleton
-class PersonDeletedAggregator: PickyEventAggregator<PersonEvent, PersonDeleted, PersonAggregate>(PersonDeleted::class.java) {
+class PersonHealthyAggregator: PickyEventAggregator<PersonEvent, PersonHealthy, PersonAggregate>(PersonHealthy::class.java) {
     override fun doProcess(
-        event: PersonDeleted,
+        event: PersonHealthy,
         aggregate: PersonAggregate?
-    ): EventAggregatorResult<PersonDeleted, PersonAggregate> {
+    ): EventAggregatorResult<PersonHealthy, PersonAggregate> {
         if (aggregate == null) {
             return EventAggregatorResult(event, FailFeedback("person with this aggregateId not found"))
         }
         return EventAggregatorResult(
             event,
-            null,
-            SuccessFeedback(event.reference)
+            aggregate.copy(
+                person = aggregate.person.copy(
+                    sick = false
+                )
+            )
         )
     }
 }

@@ -1,0 +1,7 @@
+td {
+  padding-left: 6px;
+  padding-right: 6px;
+}
+tr.sick {
+  color: #aa5500;
+}

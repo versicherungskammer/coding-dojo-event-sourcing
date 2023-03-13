@@ -8,6 +8,8 @@ import de.vkb.dojo.es.humanResources.model.ref.PersonReference
 @JsonSubTypes(
     JsonSubTypes.Type(value = CreatePerson::class, name = "create-person"),
     JsonSubTypes.Type(value = EditPerson::class, name = "edit-person"),
+    JsonSubTypes.Type(value = MarkPersonAsSick::class, name = "mark-person-sick"),
+    JsonSubTypes.Type(value = MarkPersonAsHealthy::class, name = "mark-person-healthy"),
     JsonSubTypes.Type(value = DeletePerson::class, name = "delete-person")
 )
 interface PersonCommand: Command

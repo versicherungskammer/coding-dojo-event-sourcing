@@ -3,10 +3,7 @@ package de.vkb.dojo.es.humanResources.rest
 import de.vkb.dojo.es.humanResources.kafka.PersonCommandProducer
 import de.vkb.dojo.es.humanResources.kafka.view.PersonStore
 import de.vkb.dojo.es.humanResources.model.Change
-import de.vkb.dojo.es.humanResources.model.command.CreatePerson
-import de.vkb.dojo.es.humanResources.model.command.DeletePerson
-import de.vkb.dojo.es.humanResources.model.command.EditPerson
-import de.vkb.dojo.es.humanResources.model.command.PersonCommand
+import de.vkb.dojo.es.humanResources.model.command.*
 import de.vkb.dojo.es.humanResources.model.dto.PersonOutput
 import de.vkb.dojo.es.humanResources.model.ref.FeedbackReference
 import de.vkb.dojo.es.humanResources.model.ref.Reference
@@ -73,6 +70,26 @@ class PersonController(
     fun delete(request: HttpRequest<*>, @PathVariable aggregateId: String): HttpResponse<Reference> {
         return sendCommand(request) { operationId ->
             DeletePerson(
+                operationId = operationId,
+                aggregateId = aggregateId
+            )
+        }
+    }
+
+    @Post("/{aggregateId}/sick")
+    fun sick(request: HttpRequest<*>, @PathVariable aggregateId: String): HttpResponse<Reference> {
+        return sendCommand(request) { operationId ->
+            MarkPersonAsSick(
+                operationId = operationId,
+                aggregateId = aggregateId
+            )
+        }
+    }
+
+    @Delete("/{aggregateId}/sick")
+    fun healthy(request: HttpRequest<*>, @PathVariable aggregateId: String): HttpResponse<Reference> {
+        return sendCommand(request) { operationId ->
+            MarkPersonAsHealthy(
                 operationId = operationId,
                 aggregateId = aggregateId
             )

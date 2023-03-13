@@ -11,7 +11,7 @@ public class ReferenceService {
     public ResponseEntity<Reference> sendResponse(HttpStatus status, Reference reference) {
         var location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
-                .path(reference.getPath())
+                .replacePath(reference.getPath())
                 .build()
                 .toUri()
                 .toString();

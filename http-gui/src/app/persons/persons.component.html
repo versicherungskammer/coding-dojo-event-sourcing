@@ -1,0 +1,27 @@
+<button mat-raised-button (click)="reload()">neu laden</button>
+<button mat-raised-button (click)="create()">erstellen</button>
+<table>
+  <thead>
+  <tr>
+    <th>Username</th>
+    <th>voller Name</th>
+    <th>ID</th>
+    <th>Status</th>
+    <th></th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let row of list" [ngClass]="{sick: row.sick}">
+    <td>{{row.username}}</td>
+    <td>{{row.fullname}}</td>
+    <td>{{row.id}}</td>
+    <td>{{row.sick ? "krank" : ""}}</td>
+    <td>
+      <button mat-raised-button (click)="edit(row)">ändern</button>
+      <button mat-raised-button (click)="sick(row)" *ngIf="!row.sick">krank</button>
+      <button mat-raised-button (click)="healthy(row)" *ngIf="row.sick">gesund</button>
+      <button mat-raised-button (click)="delete(row)">löschen</button>
+    </td>
+  </tr>
+  </tbody>
+</table>
