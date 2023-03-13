@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: publish
+      - name: publish-topics-init
         uses: versicherungskammer/multi-platform-docker-action@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -18,3 +18,21 @@ jobs:
           auto-tags: branch-name latest-if-main commit-hash
           path: topics-init
           docker-file: topics-init/Dockerfile
+
+      - name: publish-mock-facility-management
+        uses: versicherungskammer/multi-platform-docker-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          image-name: mock-facility-management
+          auto-tags: branch-name latest-if-main commit-hash
+          path: mock-facility-management
+          docker-file: mock-facility-management/Dockerfile
+
+#      - name: publish-mock-human-resources
+#        uses: versicherungskammer/multi-platform-docker-action@v1
+#        with:
+#          token: ${{ secrets.GITHUB_TOKEN }}
+#          image-name: mock-human-resources
+#          auto-tags: branch-name latest-if-main commit-hash
+#          path: mock-human-resources
+#          docker-file: mock-human-resources/Dockerfile
