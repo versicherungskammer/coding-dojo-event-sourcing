@@ -34,4 +34,4 @@ docker-compose restart human-resources
 
 in diesem Beispiel wird das CQRS Pattern mit folgenden Topologien/Streams umgesetzt:
 
-![Ui Bunt](https://raw.githubusercontent.com/versicherungskammer/coding-dojo-event-sourcing/main/topology.png)
+![Ui Bunt](https://github.com/versicherungskammer/coding-dojo-event-sourcing/raw/main/topology.png)
