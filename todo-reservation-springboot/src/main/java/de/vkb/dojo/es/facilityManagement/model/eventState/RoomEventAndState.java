@@ -2,12 +2,10 @@ package de.vkb.dojo.es.facilityManagement.model.eventState;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import de.vkb.dojo.es.facilityManagement.model.event.RoomEvent;
 import de.vkb.dojo.es.facilityManagement.model.state.Room;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class RoomEventAndState {
     private final RoomEvent event;
     private final Room state;

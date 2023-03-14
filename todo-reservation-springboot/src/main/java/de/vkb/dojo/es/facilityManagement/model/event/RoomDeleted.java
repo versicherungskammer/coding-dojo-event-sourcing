@@ -3,22 +3,18 @@ package de.vkb.dojo.es.facilityManagement.model.event;
 import com.fasterxml.jackson.annotation.*;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonTypeName("room-created")
-public class RoomCreated extends RoomEvent {
+@JsonTypeName("room-deleted")
+public class RoomDeleted extends RoomEvent {
     private final String operationId;
     private final String aggregateId;
 
-    private final String name;
-
     @JsonCreator
-    public RoomCreated(
+    public RoomDeleted(
             @JsonProperty("operationId") String operationId,
-            @JsonProperty("aggregateId") String aggregateId,
-            @JsonProperty("name") String name
+            @JsonProperty("aggregateId") String aggregateId
     ) {
         this.operationId = operationId;
         this.aggregateId = aggregateId;
-        this.name = name;
     }
 
     @Override
@@ -27,10 +23,6 @@ public class RoomCreated extends RoomEvent {
         return operationId;
     }
 
-    @JsonGetter
-    public String getName() {
-        return name;
-    }
 
     @Override
     @JsonGetter

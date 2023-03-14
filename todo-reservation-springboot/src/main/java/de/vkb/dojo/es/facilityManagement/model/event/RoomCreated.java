@@ -33,7 +33,6 @@ public class RoomCreated extends RoomEvent {
     }
 
     @Override
-    @JsonGetter
     public String getAggregateId() {
         return aggregateId;
     }

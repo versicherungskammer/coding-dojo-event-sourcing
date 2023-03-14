@@ -1,24 +1,27 @@
-package de.vkb.dojo.es.facilityManagement.model.event;
+package de.vkb.dojo.es.humanResources.model.event;
 
 import com.fasterxml.jackson.annotation.*;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonTypeName("room-created")
-public class RoomCreated extends RoomEvent {
+@JsonTypeName("person-created")
+public class PersonCreated extends PersonEvent {
     private final String operationId;
     private final String aggregateId;
 
-    private final String name;
+    private final String username;
+    private final String fullname;
 
     @JsonCreator
-    public RoomCreated(
+    public PersonCreated(
             @JsonProperty("operationId") String operationId,
             @JsonProperty("aggregateId") String aggregateId,
-            @JsonProperty("name") String name
+            @JsonProperty("username") String username,
+            @JsonProperty("fullname") String fullname
     ) {
         this.operationId = operationId;
         this.aggregateId = aggregateId;
-        this.name = name;
+        this.username = username;
+        this.fullname = fullname;
     }
 
     @Override
@@ -27,14 +30,19 @@ public class RoomCreated extends RoomEvent {
         return operationId;
     }
 
-    @JsonGetter
-    public String getName() {
-        return name;
-    }
-
     @Override
     @JsonGetter
     public String getAggregateId() {
         return aggregateId;
+    }
+
+    @JsonGetter
+    public String getUsername() {
+        return username;
+    }
+
+    @JsonGetter
+    public String getFullname() {
+        return fullname;
     }
 }

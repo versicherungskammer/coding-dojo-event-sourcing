@@ -1,9 +1,12 @@
 package de.vkb.dojo.es.reservations.kafka;
 
 import de.vkb.dojo.es.common.model.feedback.Feedback;
+import de.vkb.dojo.es.facilityManagement.model.event.RoomEvent;
+import de.vkb.dojo.es.humanResources.model.event.PersonEvent;
 import de.vkb.dojo.es.reservations.kafka.config.StoreNames;
 import de.vkb.dojo.es.reservations.kafka.config.TopicNames;
-import de.vkb.dojo.es.reservations.model.aggregate.ReservationAggregate;
+import de.vkb.dojo.es.reservations.model.command.ReservationCommand;
+import de.vkb.dojo.es.reservations.model.event.ReservationEvent;
 import de.vkb.dojo.es.reservations.model.state.Reservation;
 import de.vkb.dojo.es.reservations.serde.JsonSerdeFactory;
 import org.apache.kafka.common.serialization.Serdes;
@@ -11,83 +14,87 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.Materialized;
-import org.apache.kafka.streams.state.Stores;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 @Component
 public class StreamTopologiesFactory {
-    @Bean("reservationCommandHandlerTopology")
-    public Topology createRoomCommandTopology(
-            TopicNames topicNames,
-            JsonSerdeFactory jsonSerdeFactory,
-            @Qualifier("reservationCommandHandlerTopologyBuilder") StreamsBuilder builder
-    ) {
-        var resultStream = builder.stream(
-                        topicNames.getReservationCommand(),
-                        Consumed.with(Serdes.String(), jsonSerdeFactory.of(de.vkb.dojo.es.reservations.model.command.ReservationCommand.class))
-                );
 
-        return builder.build();
+    private final TopicNames topicNames;
+    private final StoreNames storeNames;
+    private final JsonSerdeFactory jsonSerdeFactory;
+
+    public StreamTopologiesFactory(TopicNames topicNames, StoreNames storeNames, JsonSerdeFactory jsonSerdeFactory) {
+        this.topicNames = topicNames;
+        this.storeNames = storeNames;
+        this.jsonSerdeFactory = jsonSerdeFactory;
     }
 
     @Bean("reservationEventAggregatorTopology")
     public Topology createRoomEventTopology(
-            TopicNames topicNames,
-            StoreNames storeNames,
-            JsonSerdeFactory jsonSerdeFactory,
             @Qualifier("reservationEventAggregatorTopologyBuilder") StreamsBuilder builder
     ) {
-        builder.addStateStore(
-                Stores.keyValueStoreBuilder(
-                        Stores.persistentKeyValueStore(storeNames.reservationEventAggregate),
-                        Serdes.String(), jsonSerdeFactory.of(ReservationAggregate.class)
-                )
+        var events = builder.stream(
+                topicNames.getReservationEventInternal(),
+                Consumed.with(Serdes.String(), jsonSerdeFactory.of(ReservationEvent.class))
         );
+
+        //TODO: die Event-Verarbeitung soll hier erfolgen.
+        //TODO: wenn das Event nicht zum aktuellen Aggregat passt, soll ein FailFeedback unter der OperationId versendet werden
+        //TODO: wenn das Event erfolgreich verarbeitet werden konnte, sollte das Event im eventExternal Topic versendet werden
+        //TODO: wenn das Event erfolgreich verarbeitet werden konnte, sollte der neue State im stateTopic versendet werden
+        //TODO: wenn das Event erfolgreich verarbeitet werden konnte, sollte das Event und der neue State im eventStateTopic versendet werden
+
+        return builder.build();
+    }
+
+    @Bean("reservationCommandHandlerTopology")
+    public Topology createRoomCommandTopology(
+            @Qualifier("reservationCommandHandlerTopologyBuilder") StreamsBuilder builder
+    ) {
+        var commands = builder.stream(
+                topicNames.getReservationCommand(),
+                Consumed.with(Serdes.String(), jsonSerdeFactory.of(ReservationCommand.class))
+        );
+
+        //TODO: die Verarbeitung von Commands zu Events, inkl. Plausibilitätsprüfung etc sollte hier erfolgen.
+
+        //TODO: wenn kein Event erzeugt wurde, sollte ein Feedback Objekt in das feedback-Topic mit der operationId des commands als Key versendet werden
 
         return builder.build();
     }
 
     @Bean("reservationRoomSagaTopology")
     public Topology createReservationRoomSagaTopology(
-            TopicNames topicNames,
-            StoreNames storeNames,
-            JsonSerdeFactory jsonSerdeFactory,
             @Qualifier("reservationRoomSagaTopologyBuilder") StreamsBuilder builder
     ) {
-        builder.addStateStore(
-                Stores.keyValueStoreBuilder(
-                        Stores.persistentKeyValueStore(storeNames.reservationEventAggregate),
-                        Serdes.String(), jsonSerdeFactory.of(ReservationAggregate.class)
-                )
+        var roomEvents = builder.stream(
+                topicNames.getRoomEvent(),
+                Consumed.with(Serdes.String(), jsonSerdeFactory.of(RoomEvent.class))
         );
+
+        //TODO: wenn ein Raum gelöscht oder gesperrt wird, alle bestehenden Reservierungen löschen
 
         return builder.build();
     }
 
     @Bean("reservationPersonSagaTopology")
     public Topology createReservationPersonSagaTopology(
-            TopicNames topicNames,
-            StoreNames storeNames,
-            JsonSerdeFactory jsonSerdeFactory,
             @Qualifier("reservationPersonSagaTopologyBuilder") StreamsBuilder builder
     ) {
-        builder.addStateStore(
-                Stores.keyValueStoreBuilder(
-                        Stores.persistentKeyValueStore(storeNames.reservationEventAggregate),
-                        Serdes.String(), jsonSerdeFactory.of(ReservationAggregate.class)
-                )
+        var personEvents = builder.stream(
+                topicNames.getPersonEvent(),
+                Consumed.with(Serdes.String(), jsonSerdeFactory.of(PersonEvent.class))
         );
+
+        //TODO: wenn eine Person gelöscht oder krank wird, alle bestehenden Reservierungen löschen
 
         return builder.build();
     }
 
     @Bean("reservationReaderTopology")
     public Topology createRoomReaderTopology(
-            TopicNames topicNames,
-            StoreNames storeNames,
-            JsonSerdeFactory jsonSerdeFactory,
             @Qualifier("reservationReaderTopologyBuilder") StreamsBuilder builder
     ) {
         builder.globalTable(
@@ -104,9 +111,6 @@ public class StreamTopologiesFactory {
 
     @Bean("feedbackReaderTopology")
     public Topology createFeedbackReaderTopology(
-            TopicNames topicNames,
-            StoreNames storeNames,
-            JsonSerdeFactory jsonSerdeFactory,
             @Qualifier("feedbackReaderTopologyBuilder") StreamsBuilder builder
     ) {
         builder.globalTable(
