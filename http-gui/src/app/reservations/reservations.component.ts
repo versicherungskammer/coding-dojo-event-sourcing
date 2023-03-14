@@ -41,8 +41,8 @@ export class ReservationsComponent implements OnInit {
     ).subscribe( ([rooms, persons]) => {
       const dialogRef = this.dialog.open(ReservationComponent, {
         data: {
-          rooms: rooms,
-          persons: persons
+          rooms: rooms.filter(it => !it.maintenance),
+          persons: persons.filter(it => !it.sick)
         }
       });
       dialogRef.afterClosed().subscribe(result => {

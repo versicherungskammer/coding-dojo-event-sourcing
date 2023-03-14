@@ -11,6 +11,15 @@ public class RoomData extends Room {
     @JsonCreator
     public RoomData(
             @JsonProperty("id") String id,
+            @JsonProperty("name") String name,
+            @JsonProperty("maintenance") Boolean maintenance
+    ) {
+        super(name, maintenance);
+        this.id = id;
+    }
+
+    public RoomData(
+            String id,
             Room template
     ) {
         super(template.getName(), template.getMaintenance());

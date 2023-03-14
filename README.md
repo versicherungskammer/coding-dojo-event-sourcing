@@ -23,3 +23,8 @@ die Projekte haben schon die Input/Output-Klassen (Commands, Events, States) fes
 
 mit der `docker-compose.yml` kann ein Verbund aus Zookeeper, Kafka, facility-management, human-resources und einer mini http-gui gestartet werden.
 die http-gui ist unter [http://localhost:8079](http://localhost:8079) erreichbar.
+*Hinweis*: wegen einer Race-Condition mit dem Anlegen der Topics ist es nötig, beim ersten Mal per Hand die beiden upstream backends neu zu starten:
+````bash
+docker-compose restart facility-management
+docker-compose restart human-resources
+````

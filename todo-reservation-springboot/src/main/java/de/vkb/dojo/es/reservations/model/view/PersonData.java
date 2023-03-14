@@ -11,6 +11,16 @@ public class PersonData extends Person {
     @JsonCreator
     public PersonData(
             @JsonProperty("id") String id,
+            @JsonProperty("username") String username,
+            @JsonProperty("fullname") String fullname,
+            @JsonProperty("sick") Boolean sick
+    ) {
+        super(username, fullname, sick);
+        this.id = id;
+    }
+
+    public PersonData(
+            String id,
             Person template
     ) {
         super(template.getUsername(), template.getFullname(), template.getSick());
