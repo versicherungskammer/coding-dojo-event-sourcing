@@ -28,3 +28,10 @@ die http-gui ist unter [http://localhost:8079](http://localhost:8079) erreichbar
 docker-compose restart facility-management
 docker-compose restart human-resources
 ````
+
+
+## Topology Layout
+
+in diesem Beispiel wird das CQRS Pattern mit folgenden Topologien/Streams umgesetzt:
+
+![Ui Bunt](https://raw.githubusercontent.com/versicherungskammer/coding-dojo-event-sourcing/main/topology.png)
