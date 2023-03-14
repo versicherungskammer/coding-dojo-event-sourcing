@@ -9,14 +9,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Person {
     private final String username;
     private final String fullname;
+    private final Boolean sick;
 
     @JsonCreator
     public Person(
             @JsonProperty("username") String username,
-            @JsonProperty("fullname") String fullname
+            @JsonProperty("fullname") String fullname,
+            @JsonProperty("sick") Boolean sick
     ) {
         this.username = username;
         this.fullname = fullname;
+        this.sick = sick;
     }
 
     @JsonGetter
@@ -26,5 +29,9 @@ public class Person {
     @JsonGetter
     public String getFullname() {
         return fullname;
+    }
+    @JsonGetter
+    public Boolean getSick() {
+        return sick;
     }
 }
