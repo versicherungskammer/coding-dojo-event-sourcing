@@ -9,5 +9,5 @@ import jakarta.inject.Singleton
 data class StoreNames(
     @Property(name = "kafka.streams.default.stores.aggregate") val personEventAggregate: String,
     @Property(name = "kafka.streams.person-reader.stores.state") val personReaderState: String,
-    @Property(name = "kafka.streams.feedback-reader.stores.state") val feedbackReaderState: String
+    @Property(name = "kafka.streams.person-feedback-reader.stores.state") val feedbackReaderState: String
 )
