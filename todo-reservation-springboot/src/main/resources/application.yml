@@ -1,0 +1,67 @@
+spring:
+  kafka:
+    replayMode: ${REPLAY_MODE:false}
+
+    topics:
+      roomEvent: dojo-room-event
+      roomEventAndState: dojo-room-event-state
+      roomState: dojo-room-state
+      personEvent: dojo-person-event
+      personEventAndState: dojo-person-event-state
+      personState: dojo-person-state
+      reservationCommand: dojo-reservation-command
+      reservationEventInternal: dojo-reservation-event-internal
+      reservationEventExternal: dojo-reservation-event
+      reservationEventAndState: dojo-reservation-event-state
+      reservationState: dojo-reservation-state
+      feedback: dojo-reservation-feedback
+
+    bootstrapServers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+      reeservationCommandProducer:
+        clientId: "reservation-command-producer"
+
+    streams:
+      properties:
+        processing.guarantee: exactly_once
+        auto-offset-reset: latest
+        replication-factor: 1
+
+      reservationCommandHandler:
+        application.id: "reservation-command-handler"
+        stores:
+          rooms: "reservation-rooms"
+          persons: "reservation-persons"
+
+      reservationEventAggregator:
+        application.id: "reservation-event-aggregator"
+        stores:
+          aggregate: "reservation-aggregate"
+
+      reservationRoomSaga:
+        application.id: "reservation-room-saga"
+        stores:
+          rooms: "reservation-rooms"
+
+      reservationPersonSaga:
+        application.id: "reservation-person-saga"
+        stores:
+          persons: "reservation-persons"
+
+      reservationReader:
+        application.id: "reservation-reader"
+        stores:
+          state: "reservation-state"
+
+      feedbackReader:
+        application.id: "reservation-feedback-reader"
+        stores:
+          state: "reservation-feedback"
+
+logging:
+  level:
+    org.apache.kafka: WARN

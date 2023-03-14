@@ -1,0 +1,282 @@
+package de.vkb.dojo.es.reservations.kafka
+
+import de.vkb.dojo.es.common.model.feedback.FailFeedback
+import de.vkb.dojo.es.common.model.feedback.Feedback
+import de.vkb.dojo.es.common.model.feedback.SuccessFeedback
+import de.vkb.dojo.es.facilityManagement.model.event.RoomEvent
+import de.vkb.dojo.es.facilityManagement.model.state.Room
+import de.vkb.dojo.es.humanResources.model.event.PersonEvent
+import de.vkb.dojo.es.humanResources.model.state.Person
+import de.vkb.dojo.es.reservations.kafka.config.StoreNames
+import de.vkb.dojo.es.reservations.kafka.config.TopicNames
+import de.vkb.dojo.es.reservations.model.aggregate.ReservationAggregate
+import de.vkb.dojo.es.reservations.model.command.CreateReservation
+import de.vkb.dojo.es.reservations.model.command.DeleteReservation
+import de.vkb.dojo.es.reservations.model.command.ReservationCommand
+import de.vkb.dojo.es.reservations.model.event.ReservationCreated
+import de.vkb.dojo.es.reservations.model.event.ReservationDeleted
+import de.vkb.dojo.es.reservations.model.event.ReservationEvent
+import de.vkb.dojo.es.reservations.model.eventState.ReservationEventAndState
+import de.vkb.dojo.es.reservations.model.state.Reservation
+import de.vkb.dojo.es.reservations.model.view.PersonData
+import de.vkb.dojo.es.reservations.model.view.RoomData
+import io.micronaut.configuration.kafka.serde.JsonObjectSerde
+import io.micronaut.configuration.kafka.streams.ConfiguredStreamBuilder
+import io.micronaut.context.annotation.Factory
+import io.micronaut.json.JsonObjectSerializer
+import jakarta.inject.Named
+import jakarta.inject.Singleton
+import org.apache.kafka.common.serialization.Serdes
+import org.apache.kafka.streams.KeyValue
+import org.apache.kafka.streams.kstream.*
+import org.apache.kafka.streams.processor.ProcessorContext
+import org.apache.kafka.streams.state.KeyValueStore
+import org.apache.kafka.streams.state.Stores
+import org.apache.kafka.streams.state.TimestampedKeyValueStore
+
+@Factory
+class StreamFactory(
+    val storeNames: StoreNames,
+    val topicNames: TopicNames,
+    val objectSerializer: JsonObjectSerializer
+) {
+
+    data class Triple<A,B,C>(
+        val a: A,
+        val b: B,
+        val c: C
+    )
+
+    @Singleton
+    fun eventAggregatorTopology(
+        @Named("default") builder: ConfiguredStreamBuilder
+    ): KStream<String, *> {
+        builder.addStateStore(
+            Stores.keyValueStoreBuilder(
+                Stores.persistentKeyValueStore(storeNames.reservationEventAggregate),
+                Serdes.StringSerde(), JsonObjectSerde(objectSerializer, ReservationAggregate::class.java)
+            )
+        )
+
+        val events = builder.stream(
+                topicNames.reservationEventInternal,
+                Consumed.with(Serdes.String(), JsonObjectSerde(objectSerializer, ReservationEvent::class.java))
+            )
+            .map { _, v -> KeyValue(v.aggregateId, v) }
+            .repartition(Repartitioned.with(Serdes.String(), JsonObjectSerde(objectSerializer, ReservationEvent::class.java)))
+
+        val resultStream = events
+            .transformValues(object: ValueTransformerWithKeySupplier<String, ReservationEvent, Triple<ReservationEvent, Boolean, Reservation?>> {
+                override fun get(): ValueTransformerWithKey<String, ReservationEvent, Triple<ReservationEvent, Boolean, Reservation?>> {
+                    return object: ValueTransformerWithKey<String, ReservationEvent, Triple<ReservationEvent, Boolean, Reservation?>> {
+                        private var store: KeyValueStore<String, ReservationAggregate>? = null
+
+                        override fun init(context: ProcessorContext?) {
+                            store = context?.getStateStore(storeNames.reservationEventAggregate)
+                        }
+
+                        override fun transform(
+                            readOnlyKey: String?,
+                            value: ReservationEvent
+                        ): Triple<ReservationEvent, Boolean, Reservation?> {
+                            return if (value is ReservationCreated) {
+                                val state = Reservation(
+                                    room = value.room,
+                                    person = value.person
+                                )
+                                store?.put(
+                                    value.aggregateId,
+                                    ReservationAggregate(
+                                        id = value.aggregateId,
+                                        reservation = state
+                                    )
+                                )
+                                Triple(value, true, state)
+                            } else if (value is ReservationDeleted) {
+                                store?.put(value.aggregateId, null)
+                                Triple(value, true, null)
+                            } else {
+                                Triple(value, false, null)
+                            }
+                        }
+
+                        override fun close() {
+                        }
+                    }
+                }
+            }, storeNames.reservationEventAggregate)
+
+        resultStream
+            .map { _, v -> KeyValue(v.a.operationId, if (v.b) SuccessFeedback(v.a.reference) else FailFeedback("something wrong")) }
+            .to(
+                topicNames.feedback,
+                Produced.with(Serdes.String(), JsonObjectSerde(objectSerializer, Feedback::class.java))
+            )
+
+        val successful = resultStream
+            .filter { _, v -> v.b }
+
+        successful
+            .mapValues { v -> v.a }
+            .to(
+                topicNames.reservationEventExternal,
+                Produced.with(Serdes.String(), JsonObjectSerde(objectSerializer, ReservationEvent::class.java))
+            )
+
+        successful
+            .mapValues { v -> ReservationEventAndState(v.a, v.c) }
+            .to(
+                topicNames.reservationEventAndState,
+                Produced.with(Serdes.String(), JsonObjectSerde(objectSerializer, ReservationEventAndState::class.java))
+            )
+
+        successful
+            .mapValues { v -> v.c }
+            .to(
+                topicNames.reservationState,
+                Produced.with(Serdes.String(), JsonObjectSerde(objectSerializer, Reservation::class.java))
+            )
+
+        return successful
+    }
+
+    @Singleton
+    fun commandHandlerTopology(
+        @Named("reservation-command-handler") builder: ConfiguredStreamBuilder
+    ): KStream<String, *> {
+        builder.globalTable(
+            topicNames.roomState,
+            Consumed.with(Serdes.String(), JsonObjectSerde(objectSerializer, Room::class.java)),
+            Materialized.`as`(Stores.persistentKeyValueStore(storeNames.reservationCommandRooms))
+        )
+        builder.globalTable(
+            topicNames.personState,
+            Consumed.with(Serdes.String(), JsonObjectSerde(objectSerializer, Person::class.java)),
+            Materialized.`as`(Stores.persistentKeyValueStore(storeNames.reservationCommandPersons))
+        )
+
+        val commands = builder.stream(
+            topicNames.reservationCommand,
+            Consumed.with(Serdes.String(), JsonObjectSerde(objectSerializer, ReservationCommand::class.java))
+        )
+            .map { _, v -> KeyValue(v.aggregateId, v) }
+            .repartition(Repartitioned.with(Serdes.String(), JsonObjectSerde(objectSerializer, ReservationCommand::class.java)))
+
+        val resultStream = commands
+            .transformValues(object: ValueTransformerWithKeySupplier<String, ReservationCommand, Pair<ReservationCommand, ReservationEvent?>> {
+                override fun get(): ValueTransformerWithKey<String, ReservationCommand, Pair<ReservationCommand, ReservationEvent?>> {
+                    return object: ValueTransformerWithKey<String, ReservationCommand, Pair<ReservationCommand, ReservationEvent?>> {
+                        private var rooms: TimestampedKeyValueStore<String, Room>? = null
+                        private var persons: TimestampedKeyValueStore<String, Person>? = null
+
+                        override fun init(context: ProcessorContext?) {
+                            rooms = context?.getStateStore(storeNames.reservationCommandRooms)
+                            persons = context?.getStateStore(storeNames.reservationCommandPersons)
+                        }
+
+                        override fun transform(
+                            readOnlyKey: String?,
+                            value: ReservationCommand
+                        ): Pair<ReservationCommand, ReservationEvent?> {
+                            return if (value is CreateReservation) {
+                                val room = rooms?.get(value.room)?.value()
+                                val person = persons?.get(value.person)?.value()
+                                if (room != null && person != null) {
+                                    Pair(value, ReservationCreated(
+                                        operationId = value.operationId,
+                                        aggregateId = value.aggregateId,
+                                        room = RoomData(value.room, room),
+                                        person = PersonData(value.person, person)
+                                    ))
+                                } else {
+                                    Pair(value, null)
+                                }
+                            } else if (value is DeleteReservation) {
+                                Pair(value, ReservationDeleted(
+                                    operationId = value.operationId,
+                                    aggregateId = value.aggregateId
+                                ))
+                            } else {
+                                Pair(value, null)
+                            }
+                        }
+
+                        override fun close() {
+                        }
+                    }
+                }
+            })
+
+        val successful = resultStream
+            .filter { _, v -> v.second != null }
+
+        successful
+            .map { _, v -> KeyValue(v.second!!.aggregateId, v.second) }
+            .to(
+                topicNames.reservationEventInternal,
+                Produced.with(Serdes.String(), JsonObjectSerde(objectSerializer, ReservationEvent::class.java))
+            )
+
+        resultStream
+            .filter { _, v -> v.second == null }
+            .map { _, v -> KeyValue(v.first.operationId, FailFeedback("something wrong")) }
+            .to(
+                topicNames.feedback,
+                Produced.with(Serdes.String(), JsonObjectSerde(objectSerializer, FailFeedback::class.java))
+            )
+
+        return resultStream
+    }
+
+    @Singleton
+    fun roomSagaTopology(
+        @Named("reservation-room-saga") builder: ConfiguredStreamBuilder
+    ): KStream<String, *> {
+        return builder.stream(
+            topicNames.roomEvent,
+            Consumed.with(Serdes.String(), JsonObjectSerde(objectSerializer, RoomEvent::class.java)),
+        )
+    }
+
+    @Singleton
+    fun personSagaTopology(
+        @Named("reservation-person-saga") builder: ConfiguredStreamBuilder
+    ): KStream<String, *> {
+        return builder.stream(
+            topicNames.personEvent,
+            Consumed.with(Serdes.String(), JsonObjectSerde(objectSerializer, PersonEvent::class.java)),
+        )
+    }
+
+    @Singleton
+    fun personReaderTopology(
+        @Named("reservation-reader") builder: ConfiguredStreamBuilder
+    ): KStream<String, *> {
+        builder.globalTable(
+            topicNames.reservationState,
+            Consumed.with(Serdes.String(), JsonObjectSerde(objectSerializer, Reservation::class.java)),
+            Materialized.`as`(storeNames.reservationReaderState)
+        )
+
+        return builder.stream(
+            topicNames.reservationEventExternal, // we need to return a KStream, otherwise Micronaut does not start this topology.
+            Consumed.with(Serdes.String(), JsonObjectSerde(objectSerializer, ReservationEvent::class.java)),
+        )
+    }
+
+    @Singleton
+    fun feedbackReaderTopology(
+        @Named("reservation-feedback-reader") builder: ConfiguredStreamBuilder
+    ): KStream<String, *> {
+        builder.globalTable(
+            topicNames.feedback,
+            Consumed.with(Serdes.String(), JsonObjectSerde(objectSerializer, Feedback::class.java)),
+            Materialized.`as`(storeNames.feedbackReaderState)
+        )
+
+        return builder.stream(
+            topicNames.reservationEventExternal, // we need to return a KStream, otherwise Micronaut does not start this topology.
+            Consumed.with(Serdes.String(), JsonObjectSerde(objectSerializer, ReservationEvent::class.java)),
+        )
+    }
+}

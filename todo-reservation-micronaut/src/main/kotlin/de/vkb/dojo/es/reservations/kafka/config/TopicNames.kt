@@ -1,8 +1,6 @@
 package de.vkb.dojo.es.reservations.kafka.config
 
 import io.micronaut.context.annotation.ConfigurationProperties
-import io.micronaut.context.annotation.Value
-import jakarta.inject.Singleton
 
 @ConfigurationProperties("kafka.topics")
 interface TopicNames {

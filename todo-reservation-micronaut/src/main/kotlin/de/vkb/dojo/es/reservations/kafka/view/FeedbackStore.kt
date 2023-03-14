@@ -1,7 +1,7 @@
 package de.vkb.dojo.es.reservations.kafka.view
 
-import de.vkb.dojo.es.reservations.kafka.config.StoreNames
 import de.vkb.dojo.es.common.model.feedback.Feedback
+import de.vkb.dojo.es.reservations.kafka.config.StoreNames
 import io.micronaut.configuration.kafka.streams.InteractiveQueryService
 import jakarta.inject.Singleton
 import org.apache.kafka.streams.KeyValue
