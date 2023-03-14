@@ -35,3 +35,21 @@ docker-compose restart human-resources
 in diesem Beispiel wird das CQRS Pattern mit folgenden Topologien/Streams umgesetzt:
 
 ![Ui Bunt](https://github.com/versicherungskammer/coding-dojo-event-sourcing/raw/main/topology.png)
+
+
+## Aufgabe
+
+- Sucht euch eine der beiden `todo` Projekte aus (Micronaut/Kotlin oder SpringBoot/Java)
+- Implementiere die relevanten Streams (markiert mit vielen `TODO` Markern, die Klassen heissen `StreamFactory` bzw `StreamTopologiesFactory`)
+- Wenn alle Stricke reissen, kann man ja in einem der beiden Upstream Projekte nachschlagen
+- Wichtig: ReservierungCommand hat nur ID des Raums/Person, im Event soll aber eine Struct gespeichert werden (Events müssen self-contained sein, dürfen keine Abhängigkeit zu anderen Systemen haben)
+- Nutze die GUI oder Curl (bzw die Hilfs-Bash-Skripte), um Räume/Personen und Reservierungen zu erstellen
+
+Im ersten Wurf ist die Datenstruktur bewusst einfach gehalten: Reservierungen haben erstmal keinen Zeitraum (Tag)
+
+Fortschrittliche Aufgabe:
+- Erweitert das Datenmodell der Reservierungen um einen Tag (inkl. Validierung)
+- Dazu dann natürlich auch im http-gui die Reservierungs-GUI
+- ein Raum soll natürlich nicht gleichzeitig mehrfach reservierbar sein
+- auch soll eine Reservierung nicht nachträglich erstellbar sein
+- Bonus-Punkte, wenn das System Replay-fähig ist
