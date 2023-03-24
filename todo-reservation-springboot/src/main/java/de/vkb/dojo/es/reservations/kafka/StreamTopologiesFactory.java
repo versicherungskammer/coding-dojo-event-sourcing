@@ -146,13 +146,21 @@ public class StreamTopologiesFactory {
                         var room = roomStore.get(createCommand.getRoom()).value();
 
                         if (person != null && room != null) {
-                            var event = new ReservationCreated(
-                                    value.getOperationId(),
-                                    value.getAggregateId(),
-                                    new RoomData(createCommand.getRoom(), room),
-                                    new PersonData(createCommand.getPerson(), person)
-                            );
-                            return new CommandResult(null, event, value.getOperationId());
+                            if (person.getSick() && room.getMaintenance()) {
+                                return new CommandResult(new FailFeedback("Person is sick and room is under maintenance"), null, value.getOperationId());
+                            } else if (person.getSick()) {
+                                return new CommandResult(new FailFeedback("Person is sick"), null, value.getOperationId());
+                            } else if (room.getMaintenance()) {
+                                return new CommandResult(new FailFeedback("Room is under maintenance"), null, value.getOperationId());
+                            } else {
+                                var event = new ReservationCreated(
+                                        value.getOperationId(),
+                                        value.getAggregateId(),
+                                        new RoomData(createCommand.getRoom(), room),
+                                        new PersonData(createCommand.getPerson(), person)
+                                );
+                                return new CommandResult(null, event, value.getOperationId());
+                            }
                         } else if (person == null && room != null) {
                             return new CommandResult(new FailFeedback("Person does not exist"), null, value.getOperationId());
                         } else if (person != null) {
