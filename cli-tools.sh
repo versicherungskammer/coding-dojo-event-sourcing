@@ -23,7 +23,7 @@ if [ $# -eq 0 ]; then
     >&2 usage; exit 0
 fi
 
-DOCKER_EXEC="docker-compose exec kafka"
+DOCKER_EXEC="docker compose exec kafka"
 TOPIC_CMD="${DOCKER_EXEC} /opt/bitnami/kafka/bin/kafka-topics.sh --bootstrap-server ${BOOTSTRAP_SERVERS} --list"
 CONSUME_CMD="${DOCKER_EXEC} /opt/bitnami/kafka/bin/kafka-console-consumer.sh --bootstrap-server ${BOOTSTRAP_SERVERS} --from-beginning --property print.key=true --property key.separator=: --topic"
 PRODUCE_CMD="${DOCKER_EXEC} /opt/bitnami/kafka/bin/kafka-console-producer.sh --bootstrap-server ${BOOTSTRAP_SERVERS} --property parse.key=true --property key.separator=: --topic"
