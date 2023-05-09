@@ -2,6 +2,7 @@ package de.vkb.dojo.es.reservations.kafka;
 
 import de.vkb.dojo.es.common.model.feedback.FailFeedback;
 import de.vkb.dojo.es.common.model.feedback.Feedback;
+import de.vkb.dojo.es.common.model.feedback.SuccessFeedback;
 import de.vkb.dojo.es.facilityManagement.model.event.RoomEvent;
 import de.vkb.dojo.es.facilityManagement.model.state.Room;
 import de.vkb.dojo.es.humanResources.model.event.PersonEvent;
@@ -82,7 +83,7 @@ public class StreamTopologiesFactory {
                         } else {
                             var reservation = new Reservation(event.getRoom(), event.getPerson());
                             reservationStore.put(readOnlyKey, reservation);
-                            return new EventResult(event, reservation);
+                            return new EventResult(event, reservation, new SuccessFeedback(event.getReference()));
                         }
                     }
 

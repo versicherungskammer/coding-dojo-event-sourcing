@@ -20,8 +20,8 @@ public class EventResult {
         this.operationId = operationId;
     }
 
-    public EventResult(ReservationEvent event, Reservation reservation){
-        this.feedback = null;
+    public EventResult(ReservationEvent event, Reservation reservation, Feedback feedback){
+        this.feedback = feedback;
         this.event = event;
         this.reservation = reservation;
         this.operationId = null;
